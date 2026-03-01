@@ -135,6 +135,7 @@ export default function TeacherCalendarPage() {
       setLoading(false)
       return
     }
+    const teacherId = user.profile_id
     let cancelled = false
     const supabase = createClient()
     async function fetchSchedules() {
@@ -142,7 +143,7 @@ export default function TeacherCalendarPage() {
         const { data: courseData, error: e0 } = await supabase
           .from('course')
           .select('id')
-          .eq('teacher_id', user.profile_id)
+          .eq('teacher_id', teacherId)
         if (cancelled || e0) throw e0
         const courseIds = (courseData ?? []).map((r: { id: number }) => r.id)
         if (courseIds.length === 0) {
@@ -169,7 +170,7 @@ export default function TeacherCalendarPage() {
           `)
           .in('section_id', sectionIds)
         if (cancelled || e2) throw e2
-        setScheduleRows((schedData ?? []) as ScheduleRow[])
+        setScheduleRows((schedData ?? []) as unknown as ScheduleRow[])
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : '加载失败')
       } finally {

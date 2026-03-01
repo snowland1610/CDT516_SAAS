@@ -31,22 +31,23 @@ export default function StudentAnnouncementsPage() {
   useEffect(() => {
     let cancelled = false
     const supabase = createClient()
-    supabase
+    const query = supabase
       .from('announcement')
       .select('id, title, created_at, published_at')
       .eq('status', 'published')
       .order('created_at', { ascending: false })
-      .then(({ data, error: e }) => {
+    void (async () => {
+      try {
+        const { data, error: e } = await query
         if (cancelled) return
         if (e) throw e
         setList((data ?? []) as AnnouncementRow[])
-      })
-      .catch((e) => {
+      } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : '加载失败')
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    })()
     return () => { cancelled = true }
   }, [])
 

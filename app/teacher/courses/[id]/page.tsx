@@ -158,9 +158,9 @@ export default function TeacherCourseDetailPage() {
         }
         setSchedulesBySection(bySection)
 
-        const enrollments = (enrollRes.data ?? []) as EnrollmentWithStudent[]
+        const enrollments = (enrollRes.data ?? []) as unknown as EnrollmentWithStudent[]
         const countBySection: Record<number, number> = {}
-        const studentsBySectionMap: Record<number, { name: string; student_no: string }[]> = {}
+        const studentsBySectionMap: Record<number, { id: number; name: string; student_no: string }[]> = {}
         for (const sid of sectionIds) {
           countBySection[sid] = 0
           studentsBySectionMap[sid] = []
@@ -191,7 +191,7 @@ export default function TeacherCourseDetailPage() {
             .select('group_id, student:student_id(id, name, student_no)')
             .in('group_id', groupIds)
           if (!cancelled && membersRes.error) throw membersRes.error
-          const membersRaw = (membersRes.data ?? []) as { group_id: number; student: Student | null }[]
+          const membersRaw = (membersRes.data ?? []) as unknown as { group_id: number; student: Student | null }[]
           const membersByGroup: Record<number, Student[]> = {}
           for (const g of groups) membersByGroup[g.id] = []
           for (const m of membersRaw) {

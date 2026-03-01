@@ -85,7 +85,7 @@ export default function StudentGroupHallPage() {
         .select('group_id, student:student_id(id, name, student_no)')
         .in('group_id', groupIds)
       if (membersRes.error) throw membersRes.error
-      const membersRaw = (membersRes.data ?? []) as { group_id: number; student: StudentInfo | null }[]
+      const membersRaw = (membersRes.data ?? []) as unknown as { group_id: number; student: StudentInfo | null }[]
       const membersByGroup: Record<number, StudentInfo[]> = {}
       for (const g of groups) membersByGroup[g.id] = []
       for (const m of membersRaw) {
@@ -112,7 +112,7 @@ export default function StudentGroupHallPage() {
       const myMap: Record<number, number> = {}
       for (const sid of sectionIds) myMap[sid] = 0
       for (const r of myRes.data ?? []) {
-        const row = r as { group_id: number; group: { section_id: number } | null }
+        const row = r as unknown as { group_id: number; group: { section_id: number } | null }
         if (row.group) myMap[row.group.section_id] = row.group_id
       }
       setMyGroupBySection((prev) => ({ ...prev, ...myMap }))
@@ -148,7 +148,7 @@ export default function StudentGroupHallPage() {
         )
         .eq('invitee_id', sid)
         .order('created_at', { ascending: false })
-      const invList = (invRaw ?? []) as InvRow[]
+      const invList = (invRaw ?? []) as unknown as InvRow[]
       const forCourse = invList.filter((r) => r.group?.section?.course_id === courseId)
       return forCourse.map((r) => ({
         id: r.id,
@@ -172,6 +172,7 @@ export default function StudentGroupHallPage() {
       setLoadingCourses(false)
       return
     }
+    const profileId = user.profile_id
     let cancelled = false
     const supabase = createClient()
     async function fetchMyCourses() {
@@ -179,8 +180,8 @@ export default function StudentGroupHallPage() {
         const { data: enrollData } = await supabase
           .from('enrollment')
           .select('section_id')
-          .eq('student_id', user.profile_id!)
-        const sectionIds = [...new Set((enrollData ?? []).map((r: { section_id: number }) => r.section_id))]
+          .eq('student_id', profileId)
+        const sectionIds = Array.from(new Set((enrollData ?? []).map((r: { section_id: number }) => r.section_id)))
         if (sectionIds.length === 0) {
           setCourseOptions([])
           setLoadingCourses(false)
@@ -190,7 +191,7 @@ export default function StudentGroupHallPage() {
           .from('section')
           .select('id, course_id')
           .in('id', sectionIds)
-        const courseIds = [...new Set(((sectionData ?? []) as { course_id: number }[]).map((s) => s.course_id))]
+        const courseIds = Array.from(new Set(((sectionData ?? []) as { course_id: number }[]).map((s) => s.course_id)))
         const { data: courseData } = await supabase
           .from('course')
           .select('id, name')
@@ -282,7 +283,7 @@ export default function StudentGroupHallPage() {
           .from('enrollment')
           .select('student_id')
           .eq('section_id', firstSectionId)
-        const rosterStudentIds = [...new Set(((enrollList ?? []) as { student_id: number }[]).map((r) => r.student_id))]
+        const rosterStudentIds = Array.from(new Set(((enrollList ?? []) as { student_id: number }[]).map((r) => r.student_id)))
         if (cancelled || rosterStudentIds.length === 0) {
           setSectionRoster([])
           setLoadingDetail(false)

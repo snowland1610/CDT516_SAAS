@@ -36,6 +36,7 @@ export default function StudentPage() {
       setLoading(false)
       return
     }
+    const profileId = user.profile_id
     let cancelled = false
     const supabase = createClient()
     async function fetchData() {
@@ -53,7 +54,7 @@ export default function StudentPage() {
                 course:course_id(id, name, code, teacher_id, teacher:teacher_id(name, employee_no))
               )
             `)
-            .eq('student_id', user.profile_id),
+            .eq('student_id', profileId),
           supabase
             .from('announcement')
             .select('id, title, created_at, published_at')
@@ -64,7 +65,7 @@ export default function StudentPage() {
         if (cancelled) return
         if (enrollRes.error) throw enrollRes.error
         if (recentRes.error) throw recentRes.error
-        const rows = (enrollRes.data ?? []) as EnrollmentRow[]
+        const rows = (enrollRes.data ?? []) as unknown as EnrollmentRow[]
         const items: MyCourseItem[] = rows
           .filter((r) => r.section?.course)
           .map((r) => ({
@@ -74,9 +75,9 @@ export default function StudentPage() {
             teacherName: r.section!.course!.teacher?.name ?? '—',
           }))
         setMyCourses(items)
-        setRecentAnnouncements((recentRes.data ?? []) as { id: number; title: string; created_at: string; published_at: string | null }[])
+        setRecentAnnouncements((recentRes.data ?? []) as unknown as { id: number; title: string; created_at: string; published_at: string | null }[])
 
-        const courseIds = [...new Set(items.map((i) => i.courseId))]
+        const courseIds = Array.from(new Set(items.map((i) => i.courseId)))
         if (courseIds.length > 0) {
           const now = new Date().toISOString()
           const { data: taskData } = await supabase
@@ -91,8 +92,8 @@ export default function StudentPage() {
           const { data: enrollSections } = await supabase
             .from('enrollment')
             .select('section_id')
-            .eq('student_id', user.profile_id)
-          const sectionIds = [...new Set((enrollSections ?? []).map((r: { section_id: number }) => r.section_id))]
+            .eq('student_id', profileId)
+          const sectionIds = Array.from(new Set((enrollSections ?? []).map((r: { section_id: number }) => r.section_id)))
           if (sectionIds.length > 0) {
             const { data: groupData } = await supabase.from('group').select('id').in('section_id', sectionIds)
             const allGroupIds = (groupData ?? []).map((g: { id: number }) => g.id)
@@ -100,7 +101,7 @@ export default function StudentPage() {
               const { data: memData } = await supabase
                 .from('group_member')
                 .select('group_id')
-                .eq('student_id', user.profile_id)
+                .eq('student_id', profileId)
                 .in('group_id', allGroupIds)
               myGroupIds = (memData ?? []).map((m: { group_id: number }) => m.group_id)
             }
@@ -112,7 +113,7 @@ export default function StudentPage() {
               .from('submission')
               .select('task_id')
               .in('task_id', taskIds)
-              .eq('student_id', user.profile_id)
+              .eq('student_id', profileId)
             for (const r of subByStudent ?? []) submittedTaskIds.add((r as { task_id: number }).task_id)
             if (myGroupIds.length > 0) {
               const { data: subByGroup } = await supabase
@@ -153,8 +154,8 @@ export default function StudentPage() {
           const { data: gradedByStudent } = await supabase
             .from('submission')
             .select('task_id, score, graded_at')
-            .eq('student_id', user.profile_id)
-            .eq('status', 'graded')
+.eq('student_id', profileId)
+              .eq('status', 'graded')
             .not('graded_at', 'is', null)
             .order('graded_at', { ascending: false })
             .limit(5)
@@ -174,12 +175,12 @@ export default function StudentPage() {
               .slice(0, 5)
           }
           if (graded.length > 0) {
-            const tids = [...new Set(graded.map((g) => g.task_id))]
+            const tids = Array.from(new Set(graded.map((g) => g.task_id)))
             const { data: taskRows } = await supabase.from('task').select('id, title, course_id').in('id', tids)
             const taskMap = Object.fromEntries(
               ((taskRows ?? []) as { id: number; title: string; course_id: number }[]).map((t) => [t.id, t])
             )
-            const cids = [...new Set(Object.values(taskMap).map((t) => t.course_id))]
+            const cids = Array.from(new Set(Object.values(taskMap).map((t) => t.course_id)))
             const { data: courseRows } = await supabase.from('course').select('id, name').in('id', cids)
             const courseMap = Object.fromEntries(
               ((courseRows ?? []) as { id: number; name: string }[]).map((c) => [c.id, c.name])

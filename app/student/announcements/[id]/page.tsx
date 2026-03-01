@@ -43,7 +43,7 @@ export default function StudentAnnouncementDetailPage() {
     }
     let cancelled = false
     const supabase = createClient()
-    supabase
+    const promise = supabase
       .from('announcement')
       .select('id, title, body, status, created_at, updated_at, published_at')
       .eq('id', numId)
@@ -57,9 +57,9 @@ export default function StudentAnnouncementDetailPage() {
         }
         setAnnouncement(data as Announcement)
       })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
+    void Promise.resolve(promise).finally(() => {
+      if (!cancelled) setLoading(false)
+    })
     return () => { cancelled = true }
   }, [id])
 

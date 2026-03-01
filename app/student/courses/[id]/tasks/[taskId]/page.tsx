@@ -91,7 +91,7 @@ export default function StudentTaskDetailPage() {
         .from('group_member')
         .select('group_id, student:student_id(id, name, student_no)')
         .in('group_id', groupIds)
-      const membersRaw = (membersData ?? []) as { group_id: number; student: StudentInfo | null }[]
+      const membersRaw = (membersData ?? []) as unknown as { group_id: number; student: StudentInfo | null }[]
       const membersByGroup: Record<number, StudentInfo[]> = {}
       for (const g of groups) membersByGroup[g.id] = []
       for (const m of membersRaw) {

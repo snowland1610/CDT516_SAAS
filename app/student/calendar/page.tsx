@@ -210,6 +210,7 @@ export default function StudentCalendarPage() {
       setLoading(false)
       return
     }
+    const profileId = user.profile_id
     let cancelled = false
     const supabase = createClient()
     async function fetchSchedules() {
@@ -217,9 +218,9 @@ export default function StudentCalendarPage() {
         const { data: enrollData, error: e1 } = await supabase
           .from('enrollment')
           .select('section_id')
-          .eq('student_id', user.profile_id)
+          .eq('student_id', profileId)
         if (cancelled || e1) throw e1
-        const sectionIds = [...new Set((enrollData ?? []).map((r: { section_id: number }) => r.section_id))]
+        const sectionIds = Array.from(new Set((enrollData ?? []).map((r: { section_id: number }) => r.section_id)))
         if (sectionIds.length === 0) {
           setScheduleRows([])
           setLoading(false)
@@ -233,7 +234,7 @@ export default function StudentCalendarPage() {
           `)
           .in('section_id', sectionIds)
         if (cancelled || e2) throw e2
-        setScheduleRows((schedData ?? []) as ScheduleRow[])
+        setScheduleRows((schedData ?? []) as unknown as ScheduleRow[])
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : '加载失败')
       } finally {
@@ -249,6 +250,7 @@ export default function StudentCalendarPage() {
       setPersonalEvents([])
       return
     }
+    const profileId = user.profile_id
     const weekEnd = new Date(weekStart)
     weekEnd.setDate(weekEnd.getDate() + 6)
     const monthGridFirst = getMonday(monthStart)
@@ -265,7 +267,7 @@ export default function StudentCalendarPage() {
       const { data, error } = await supabase
         .from('student_personal_event')
         .select('id, student_id, title, start_at, end_at, created_at, updated_at')
-        .eq('student_id', user.profile_id!)
+        .eq('student_id', profileId)
         .gte('end_at', startISO)
         .lte('start_at', endISO)
         .order('start_at')

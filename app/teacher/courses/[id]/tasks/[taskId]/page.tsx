@@ -118,7 +118,7 @@ export default function TeacherTaskDetailPage() {
           .eq('task_id', taskIdNum)
           .order('submitted_at', { ascending: false })
         if (!cancelled && subErr) throw subErr
-        setSubmissions((subData ?? []) as SubmissionRow[])
+        setSubmissions((subData ?? []) as unknown as SubmissionRow[])
 
         if (taskObj.allow_group) {
           const { data: sectionData } = await supabase

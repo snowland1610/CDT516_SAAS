@@ -88,7 +88,7 @@ export default function StudentCourseDetailPage() {
       .select('group_id, student:student_id(id, name, student_no)')
       .in('group_id', groupIds)
     if (membersRes.error) throw membersRes.error
-    const membersRaw = (membersRes.data ?? []) as { group_id: number; student: StudentInfo | null }[]
+    const membersRaw = (membersRes.data ?? []) as unknown as { group_id: number; student: StudentInfo | null }[]
     const membersByGroup: Record<number, StudentInfo[]> = {}
     for (const g of groups) membersByGroup[g.id] = []
     for (const m of membersRaw) {
@@ -115,7 +115,7 @@ export default function StudentCourseDetailPage() {
     const myMap: Record<number, number> = {}
     for (const sid of sectionIds) myMap[sid] = 0
     for (const r of myRes.data ?? []) {
-      const row = r as { group_id: number; group: { section_id: number } | null }
+      const row = r as unknown as { group_id: number; group: { section_id: number } | null }
       if (row.group) myMap[row.group.section_id] = row.group_id
     }
     setMyGroupBySection((prev) => ({ ...prev, ...myMap }))

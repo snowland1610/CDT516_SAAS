@@ -25,6 +25,7 @@ export default function TeacherPage() {
       setLoading(false)
       return
     }
+    const teacherId = user.profile_id
     let cancelled = false
     const supabase = createClient()
     async function fetchStats() {
@@ -33,7 +34,7 @@ export default function TeacherPage() {
           supabase
             .from('course')
             .select('id')
-            .eq('teacher_id', user.profile_id),
+            .eq('teacher_id', teacherId),
           supabase
             .from('announcement')
             .select('id, title, created_at, published_at')

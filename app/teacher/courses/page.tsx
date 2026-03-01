@@ -51,7 +51,7 @@ export default function TeacherCoursesPage() {
         if (sectionsRes.error) throw sectionsRes.error
         if (enrollmentsRes.error) throw enrollmentsRes.error
 
-        const courseList = (coursesRes.data ?? []) as CourseRow[]
+        const courseList = (coursesRes.data ?? []) as unknown as CourseRow[]
         const sections = (sectionsRes.data ?? []) as SectionRow[]
         const enrollments = (enrollmentsRes.data ?? []) as EnrollmentRow[]
 

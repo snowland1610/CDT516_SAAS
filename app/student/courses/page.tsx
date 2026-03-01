@@ -33,6 +33,7 @@ export default function StudentCoursesPage() {
       setLoading(false)
       return
     }
+    const profileId = user.profile_id
     let cancelled = false
     const supabase = createClient()
     async function fetchCourses() {
@@ -49,10 +50,10 @@ export default function StudentCoursesPage() {
               course:course_id(id, name, code, teacher_id, teacher:teacher_id(name, employee_no))
             )
           `)
-          .eq('student_id', user.profile_id)
+          .eq('student_id', profileId)
         if (cancelled) return
         if (e) throw e
-        const rows = (data ?? []) as EnrollmentRow[]
+        const rows = (data ?? []) as unknown as EnrollmentRow[]
         const list: MyCourseRow[] = rows
           .filter((r) => r.section?.course)
           .map((r) => ({

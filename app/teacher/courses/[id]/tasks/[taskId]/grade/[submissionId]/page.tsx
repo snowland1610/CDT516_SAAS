@@ -125,7 +125,7 @@ export default function TeacherGradeSubmissionPage() {
             .from('group_member')
             .select('student:student_id(id, name, student_no)')
             .eq('group_id', sub.group_id)
-          if (!cancelled && !membersErr) setGroupMembers((membersData ?? []) as GroupMember[])
+          if (!cancelled && !membersErr) setGroupMembers((membersData ?? []) as unknown as GroupMember[])
         } else {
           setGroupMembers([])
         }

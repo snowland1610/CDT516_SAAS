@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -15,7 +16,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 type ListItem = CurrentUser & { employee_no?: string; student_no?: string }
 
-export default function SelectUserPage() {
+function SelectUserContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { selectUser } = useAuth()
@@ -55,7 +56,7 @@ export default function SelectUserPage() {
             .select('id, name, employee_no, user_id(id, display_name, username)')
           if (cancelled) return
           if (e) throw e
-          const raw = data as { id: number; name: string; employee_no?: string; user_id: { id: number; display_name?: string; username?: string } | null }[] | null
+          const raw = data as unknown as { id: number; name: string; employee_no?: string; user_id: { id: number; display_name?: string; username?: string } | null }[] | null
           const users: ListItem[] = (raw || []).map((r) => ({
             id: r.user_id?.id ?? 0,
             role: 'teacher' as const,
@@ -71,7 +72,7 @@ export default function SelectUserPage() {
             .select('id, name, student_no, user_id(id, display_name, username)')
           if (cancelled) return
           if (e) throw e
-          const raw = data as { id: number; name: string; student_no: string; user_id: { id: number; display_name?: string; username?: string } | null }[] | null
+          const raw = data as unknown as { id: number; name: string; student_no: string; user_id: { id: number; display_name?: string; username?: string } | null }[] | null
           const users: ListItem[] = (raw || []).map((r) => ({
             id: r.user_id?.id ?? 0,
             role: 'student' as const,
@@ -156,5 +157,17 @@ export default function SelectUserPage() {
         )}
       </div>
     </main>
+  )
+}
+
+export default function SelectUserPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex flex-col items-center justify-center p-8">
+        <p className="text-gray-500">加载中…</p>
+      </main>
+    }>
+      <SelectUserContent />
+    </Suspense>
   )
 }

@@ -120,7 +120,7 @@ export default function AdminCourseDetailPage() {
         }
         setSchedulesBySection(bySection)
 
-        const enrollments = (enrollRes.data ?? []) as EnrollmentWithStudent[]
+        const enrollments = (enrollRes.data ?? []) as unknown as EnrollmentWithStudent[]
         const countBySection: Record<number, number> = {}
         const studentsBySectionMap: Record<number, { name: string; student_no: string }[]> = {}
         for (const sid of sectionIds) {
