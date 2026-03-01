@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 设计基线 token：与 tailwind.config 一致，供全站复用（见 docs/design/UI美化改动计划.md） */
+:root {
+  --foreground: #171717;
+  --background: #fafafa;
+
+  /* 主色：仅用于强调（主按钮、链接、选中态） */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-light: #e0e7ff;
+
+  /* 背景：页面与卡片区分 */
+  --background-page: #f9fafb;   /* gray-50 */
+  --background-card: #ffffff;
+
+  /* 圆角：卡片/按钮/输入框统一 */
+  --radius-card: 0.5rem;        /* 8px ≈ rounded-lg */
+
+  /* 卡片阴影：轻层次，悬停可略强 */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}

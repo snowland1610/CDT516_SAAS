@@ -1,0 +1,25 @@
+# 本地 Supabase 配置（方案 A）
+# 基于官方默认精简，保证 start / db reset 可用
+
+project_id = "cdt516-3"
+
+[api]
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+port = 54323
+
+[auth]
+site_url = "http://localhost:3000"
+enable_signup = true
+jwt_expiry = 3600
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
