@@ -4,33 +4,6 @@
 
 ---
 
-## 前置准备（部署前必须完成）
-
-### 1. 代码已在 Git 仓库中
-
-- 项目需要放在 **GitHub**、**GitLab** 或 **Bitbucket** 的仓库里，Vercel 通过连接仓库来部署。
-- 若还没推送到远程：
-  1. 在 GitHub 等平台新建一个仓库（如 `CDT516_3`）。
-  2. 本地在项目根目录执行：
-    ```bash
-     git init
-     git add .
-     git commit -m "Initial commit"
-     git remote add origin https://github.com/你的用户名/CDT516_3.git
-     git push -u origin main
-    ```
-  - 若已有仓库，确保最新代码已 `git push`。
-
-### 2. Supabase 云端项目已就绪
-
-- 使用 **Supabase Cloud**（[supabase.com](https://supabase.com)）上的项目，不要用本机 `supabase start` 的地址做生产。
-- 在 Supabase 控制台 → **SQL Editor** 中，按顺序执行本仓库中所有迁移文件（`supabase/migrations/` 下的 `.sql`），保证表结构、RLS 与本地一致。
-- 记下这两项（在 Supabase 控制台 → **Project Settings → API**）：
-  - **Project URL**（如 `https://xxxxx.supabase.co`）
-  - **anon public** key（在 Project API keys 里）
-
----
-
 ## 第一步：注册 / 登录 Vercel
 
 1. 打开 [vercel.com](https://vercel.com)，点击 **Sign Up** 或 **Log In**。
